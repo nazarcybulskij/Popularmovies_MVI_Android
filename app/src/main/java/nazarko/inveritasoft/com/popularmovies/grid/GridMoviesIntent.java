@@ -11,4 +11,8 @@ public interface GridMoviesIntent  extends MviIntent{
     public class LoadingGridMoviesIntent implements GridMoviesIntent{
 
     }
+
+    public class InitGridMoviesIntent  implements GridMoviesIntent {
+
+    }
 }
