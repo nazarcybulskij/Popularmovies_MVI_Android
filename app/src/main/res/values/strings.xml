@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Popularmovies</string>
+
+    <string name="no_movies">No movies</string>
+
 </resources>
