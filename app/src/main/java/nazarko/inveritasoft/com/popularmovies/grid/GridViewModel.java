@@ -9,6 +9,7 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.PublishSubject;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviIntent;
+import nazarko.inveritasoft.com.popularmovies.base.mvi.MviStatus;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviViewModel;
 
 /**
@@ -50,17 +51,21 @@ public class GridViewModel extends ViewModel implements MviViewModel<GridMoviesI
     private ObservableTransformer<GridMoviesIntent, GridMoviesIntent> intentFilter =
             intents -> intents.publish(shared ->
                     Observable.merge(
-                            shared.ofType(GridMoviesIntent.class).take(1),
-                            shared.filter(intent -> !(intent instanceof GridMoviesIntent))
+                            shared.ofType(GridMoviesIntent.InitGridMoviesIntent.class).take(1),
+                            shared.filter(intent -> !(intent instanceof GridMoviesIntent.InitGridMoviesIntent))
                     )
             );
 
     private GridMoviesAction actionFromIntent(MviIntent intent) {
-        try{
-            return  new GridMoviesAction.LoadingGridMoviesAction();
-        } catch (Exception ex){
-            throw new IllegalArgumentException("do not know how to treat this intent " + intent);
+        if (intent instanceof GridMoviesIntent.InitGridMoviesIntent){
+            return  new GridMoviesAction.InitGridMoviesAction();
         }
+
+        if (intent instanceof GridMoviesIntent.LoadingGridMoviesIntent){
+            return  new GridMoviesAction.LoadingGridMoviesAction();
+        }
+
+        throw new IllegalArgumentException("do not know how to treat this intent " + intent);
     }
 
     // Emits loading, success and failure events.
@@ -76,12 +81,20 @@ public class GridViewModel extends ViewModel implements MviViewModel<GridMoviesI
 
 
     private ObservableTransformer<GridMoviesAction, GridMoviesResult> actionToResultTransformer =
-            actions -> actions.publish(shared -> shared.ofType(GridMoviesAction.class).compose(onePageTransformer));
+            actions -> actions.publish(shared ->
+                    shared.ofType(GridMoviesAction.LoadingGridMoviesAction.class).compose(onePageTransformer));
 
 
 
     private static BiFunction<GridMoviesViewState, GridMoviesResult, GridMoviesViewState> reducer = (tasksViewState, tasksResult) -> {
+        if(tasksResult instanceof  GridMoviesResult.LoadingGridMoviesResult){
+            GridMoviesResult.LoadingGridMoviesResult  loadingGridMoviesResult = (GridMoviesResult.LoadingGridMoviesResult) tasksResult;
+            return  new GridMoviesViewState.LoadingViewState(loadingGridMoviesResult.status);
+        }
         return  new GridMoviesViewState.IdleViewState();
+
+
+
     };
 
 }

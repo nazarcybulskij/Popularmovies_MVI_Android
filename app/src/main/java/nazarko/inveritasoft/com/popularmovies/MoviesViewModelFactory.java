@@ -13,7 +13,6 @@ import nazarko.inveritasoft.com.popularmovies.grid.GridViewModel;
 
 public class MoviesViewModelFactory  implements ViewModelProvider.Factory {
 
-
     private static MoviesViewModelFactory INSTANCE;
 
     private final Context applicationContext;

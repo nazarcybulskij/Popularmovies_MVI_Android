@@ -13,5 +13,9 @@ public interface  GridMoviesAction extends MviAction {
 
     }
 
+    public class InitGridMoviesAction implements GridMoviesAction {
+
+    }
+
 
 }

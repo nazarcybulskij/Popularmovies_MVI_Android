@@ -10,5 +10,8 @@ public enum MviStatus {
 
     FAILURE,
 
-    IN_FLIGHT
+    IN_FLIGHT,
+
+
+    NONE
 }

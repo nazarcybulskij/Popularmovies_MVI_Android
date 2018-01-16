@@ -44,6 +44,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
         getSupportActionBar().setTitle(null);
 
         spGridSort = (Spinner)findViewById(R.id.spGridSort);
+        spGridSort.setSelection(0);
         setupSortSpinner();
 
         initViewModel();
@@ -83,19 +84,6 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
         ArrayAdapter<Sort> adapter = new ArrayAdapter<Sort>(this,R.layout.spinner_item_toolbar,makeSortOptions());
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spGridSort.setAdapter(adapter);
-
-//        spGridSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                // emit
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//                // do nothing
-//            }
-//        });
-
     }
 
     private List<Sort> makeSortOptions() {
@@ -122,10 +110,8 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
     @Override
     public void render(GridMoviesViewState state) {
-        Toast.makeText(this,"render",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this,"render",Toast.LENGTH_SHORT).show();
     }
-
-
 
     //  init
     public  Observable<GridMoviesIntent.InitGridMoviesIntent> initIntent(){
@@ -136,7 +122,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
     public Observable<GridMoviesIntent.LoadingGridMoviesIntent> changedFilter() {
         return RxAdapterView.itemSelections(spGridSort).map(integer -> {
             return  new GridMoviesIntent.LoadingGridMoviesIntent();
-        });
+        }).skip(1);
     }
 
 }

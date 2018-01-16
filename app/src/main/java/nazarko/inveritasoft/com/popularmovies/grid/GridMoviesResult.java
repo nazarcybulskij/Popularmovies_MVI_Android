@@ -18,6 +18,11 @@ public interface GridMoviesResult  extends MviResult {
             this.status = MviStatus.SUCCESS;
         }
 
+        @Override
+        public String toString() {
+            return status.toString();
+        }
+
         public LoadingGridMoviesResult(boolean inFligth){
             this.status = MviStatus.IN_FLIGHT;
         }
