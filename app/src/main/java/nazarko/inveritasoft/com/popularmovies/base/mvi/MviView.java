@@ -1,4 +1,4 @@
-package nazarko.inveritasoft.com.popularmovies.base.base;
+package nazarko.inveritasoft.com.popularmovies.base.mvi;
 
 import io.reactivex.Observable;
 

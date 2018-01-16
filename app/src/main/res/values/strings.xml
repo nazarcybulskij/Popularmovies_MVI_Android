@@ -3,4 +3,9 @@
 
     <string name="no_movies">No movies</string>
 
+    <string name="sort_popularity">Most popular</string>
+    <string name="sort_rating">Highest rated</string>
+    <string name="sort_release_date">Most recent</string>
+    <string name="sort_favorite">Favorites</string>
+
 </resources>
