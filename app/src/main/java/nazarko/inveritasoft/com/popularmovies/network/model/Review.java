@@ -1,4 +1,4 @@
-package nazarko.inveritasoft.com.popularmovies.network;
+package nazarko.inveritasoft.com.popularmovies.network.model;
 
 /**
  * Created by nazarko on 17.01.18.

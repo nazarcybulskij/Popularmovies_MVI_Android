@@ -1,4 +1,4 @@
-package nazarko.inveritasoft.com.popularmovies.network;
+package nazarko.inveritasoft.com.popularmovies.network.model;
 
 
 
@@ -6,6 +6,8 @@ package nazarko.inveritasoft.com.popularmovies.network;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
+
+import nazarko.inveritasoft.com.popularmovies.network.model.Movie;
 
 /**
  * Created by nazarko on 17.01.18.
