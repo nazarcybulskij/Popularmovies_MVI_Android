@@ -117,7 +117,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
     @Override
     public void render(GridMoviesViewState state) {
-//        Toast.makeText(this,"render",Toast.LENGTH_SHORT).show();
+        //spGridSort.setSelection(0);
     }
 
     //  init
@@ -130,6 +130,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
         return RxAdapterView.itemSelections(spGridSort).map(integer -> {
             return  new GridMoviesIntent.LoadingGridMoviesIntent();
         }).skip(1);
+
     }
 
 }
