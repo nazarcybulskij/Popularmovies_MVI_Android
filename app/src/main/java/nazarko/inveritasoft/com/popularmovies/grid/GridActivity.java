@@ -2,17 +2,12 @@ package nazarko.inveritasoft.com.popularmovies.grid;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.Toast;
 
-import com.jakewharton.rxbinding2.view.RxView;
-import com.jakewharton.rxbinding2.widget.RxAdapter;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
 
 import java.util.ArrayList;
@@ -20,15 +15,20 @@ import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
-import nazarko.inveritasoft.com.popularmovies.MoviesViewModelFactory;
+import nazarko.inveritasoft.com.popularmovies.GridViewModelFactory;
 import nazarko.inveritasoft.com.popularmovies.R;
+import nazarko.inveritasoft.com.popularmovies.SharedPrefs;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviView;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseActivity;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseFragment;
+import nazarko.inveritasoft.com.popularmovies.repo.MovieStorage;
 
 public class GridActivity extends BaseActivity implements BaseFragment.ActivityListener, MviView<GridMoviesIntent,GridMoviesViewState> {
 
     public Spinner spGridSort;
+    SharedPrefs sharedPrefs;
+    MovieStorage movieStorage;
+    List<Sort> sortOptions;
 
     private GridViewModel mViewModel;
     // Used to manage the data flow lifecycle and avoid memory leak.
@@ -39,6 +39,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grid);
+        initData();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(null);
@@ -54,6 +55,12 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
         }
     }
 
+    private void initData() {
+        sharedPrefs = new SharedPrefs( PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
+        movieStorage = new MovieStorage();
+        sortOptions = makeSortOptions();
+    }
+
     @Override
     protected void onDestroy() {
         mDisposables.dispose();
@@ -62,7 +69,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(this, MoviesViewModelFactory.getInstance(this)).get(GridViewModel.class);
+        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(this,sharedPrefs,movieStorage,sortOptions)).get(GridViewModel.class);
         mDisposables = new CompositeDisposable();
         bind();
     }
@@ -81,7 +88,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
     }
 
     private void setupSortSpinner() {
-        ArrayAdapter<Sort> adapter = new ArrayAdapter<Sort>(this,R.layout.spinner_item_toolbar,makeSortOptions());
+        ArrayAdapter<Sort> adapter = new ArrayAdapter<Sort>(this,R.layout.spinner_item_toolbar,sortOptions);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spGridSort.setAdapter(adapter);
     }

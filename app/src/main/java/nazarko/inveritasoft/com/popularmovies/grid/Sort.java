@@ -4,7 +4,7 @@ package nazarko.inveritasoft.com.popularmovies.grid;
  * Created by nazarko on 16.01.18.
  */
 
-class Sort {
+public class Sort {
 
    SortOption option;
    String title;
