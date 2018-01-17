@@ -1,5 +1,9 @@
 apply plugin: 'com.android.application'
 
+
+def keysProperties = new Properties()
+keysProperties.load(new FileInputStream(rootProject.file("key.properties")))
+
 android {
     compileSdkVersion 26
     defaultConfig {
@@ -9,11 +13,17 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildTypes.each {
+        it.buildConfigField 'String', 'MOVIE_DB_API_KEY', keysProperties['MovieDbApiKey']
     }
 
     compileOptions {
@@ -36,4 +46,10 @@ dependencies {
 
     implementation 'io.reactivex.rxjava2:rxjava:2.0.+'
     implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+
+
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.3.0'
+
 }
