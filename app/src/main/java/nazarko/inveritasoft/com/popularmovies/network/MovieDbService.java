@@ -15,7 +15,7 @@ import retrofit2.http.Query;
 public interface MovieDbService {
 
     @GET("discover/movie")
-    Single<MoviesPage> loadMovies(@Query("page")  Integer  page,
+    Observable<MoviesPage> loadMovies(@Query("page")  Integer  page,
                                       @Query("sort_by") String sortBy,
                                       @Query("api_key") String apiKey);
 

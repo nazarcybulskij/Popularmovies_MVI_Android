@@ -13,6 +13,7 @@ import io.reactivex.schedulers.Schedulers;
 import nazarko.inveritasoft.com.popularmovies.BuildConfig;
 import nazarko.inveritasoft.com.popularmovies.Constants;
 import nazarko.inveritasoft.com.popularmovies.DB.MovieDb;
+import nazarko.inveritasoft.com.popularmovies.GridViewModelFactory;
 import nazarko.inveritasoft.com.popularmovies.grid.GridMoviesResult;
 import nazarko.inveritasoft.com.popularmovies.grid.SortOption;
 import nazarko.inveritasoft.com.popularmovies.network.MovieDbService;
@@ -28,11 +29,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieRepository {
 
+    private static MovieRepository INSTANCE;
+
     private MovieDbService movieDbService;
     private MovieDb movieDb;
 
+    public synchronized static MovieRepository getInstance(Context context) {
+        if (INSTANCE == null) {
+            INSTANCE = new MovieRepository(context);
+        }
+        return INSTANCE;
+    }
 
-    public MovieRepository(Context   context) {
+    private MovieRepository(Context   context) {
 
         Gson gson = new GsonBuilder().create();
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -52,22 +61,7 @@ public class MovieRepository {
 
 
     public Observable<MoviesPage> getOnlMovies(int page, SortOption sortOption, boolean fetchAllPages){
-        return movieDbService.loadMovies(page, sortOption.getValue(),BuildConfig.MOVIE_DB_API_KEY).toObservable();
+        return movieDbService.loadMovies(page, sortOption.getValue(),BuildConfig.MOVIE_DB_API_KEY);
     }
-
-
-//    fun getOnlMovies(page: Int, sortOption: SortOption, fetchAllPages: Boolean): Observable<GetMoviesResult> =
-//            if (fetchAllPages) {
-//        Observable.range(1, page)
-//                .concatMap {
-//            theMovieDbService.loadMovies(it, sortOption.value)
-//                    .flattenAsObservable { it.movies }
-//        }
-//                        .toList()
-//
-//    } else {
-//        theMovieDbService.loadMovies(page, sortOption.value)
-//                .map { it.movies }
-//    }
 
 }

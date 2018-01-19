@@ -44,7 +44,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     private CompositeDisposable mDisposables;
 
     private void initData() {
-       movieStorage = new MovieRepository(getActivity().getApplicationContext());
+       movieStorage = MovieRepository.getInstance(getActivity().getApplicationContext());
     }
 
     private void initViewModel() {
@@ -55,12 +55,12 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     private void bind() {
         mDisposables.add(mViewModel.states().subscribe(action->{
-            Log.d("TAG","RENDER "+ action.toString()) ;
+            Log.d("TAG_1","RENDER "+ action.toString()) ;
             render(action);
         },throwable -> {
-            Log.d("TAG",throwable.getMessage());
+            Log.d("TAG_1",throwable.getMessage());
         },()->{
-            Log.d("TAG","COMPLIDE");
+            Log.d("TAG_1","COMPLIDE");
         }));
         mViewModel.processIntents(intents());
     }

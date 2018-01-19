@@ -71,13 +71,10 @@ public class GridViewModel extends ViewModel implements MviViewModel<GridMoviesI
             );
 
     private GridMoviesAction actionFromIntent(MviIntent intent) {
-
         GridMoviesAction result = null;
-
         if (intent instanceof GridMoviesIntent.InitGridMoviesIntent){
             result = new GridMoviesAction.InitGridMoviesAction();
         }
-
         if (intent instanceof GridMoviesIntent.LoadingGridMoviesIntent) {
             GridMoviesIntent.LoadingGridMoviesIntent loadingGridMoviesIntent = (GridMoviesIntent.LoadingGridMoviesIntent) intent;
             result = new GridMoviesAction.LoadingGridMoviesAction(loadingGridMoviesIntent.option);
@@ -87,6 +84,9 @@ public class GridViewModel extends ViewModel implements MviViewModel<GridMoviesI
         }else{
             throw new IllegalArgumentException("do not know how to treat this intent " + intent);
         }
+    }
+    public void test(){
+
     }
 
     // Emits loading, success and failure events.

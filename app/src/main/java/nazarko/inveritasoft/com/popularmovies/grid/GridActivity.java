@@ -58,7 +58,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
     private void initData() {
         sharedPrefs = new SharedPrefs( PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
-        movieStorage = new MovieRepository(getApplicationContext());
+        movieStorage = MovieRepository.getInstance(getApplicationContext());
         sortOptions = makeSortOptions();
     }
 
