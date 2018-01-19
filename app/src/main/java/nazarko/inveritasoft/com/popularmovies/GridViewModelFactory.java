@@ -7,9 +7,10 @@ import android.support.annotation.NonNull;
 
 import java.util.List;
 
-import nazarko.inveritasoft.com.popularmovies.grid.GridViewModel;
+import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridFragmentViewModel;
+import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridViewModel;
 import nazarko.inveritasoft.com.popularmovies.grid.Sort;
-import nazarko.inveritasoft.com.popularmovies.repo.MovieStorage;
+import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 
 /**
  * Created by nazarko on 17.01.18.
@@ -21,17 +22,18 @@ public class GridViewModelFactory implements ViewModelProvider.Factory {
     private static GridViewModelFactory INSTANCE;
 
     private final Context applicationContext;
+    private final MovieRepository movieStorage;
 
-    private GridViewModelFactory(Context applicationContext) {
+    private GridViewModelFactory(Context applicationContext, MovieRepository movieStorage) {
         this.applicationContext = applicationContext;
+        this.movieStorage = movieStorage;
+
     }
 
     public static GridViewModelFactory getInstance(Context context,
-                                                   SharedPrefs sharedPrefs,
-                                                   MovieStorage movieStorage,
-                                                   List<Sort> sortOptions ) {
+                                                   MovieRepository movieStorage) {
         if (INSTANCE == null) {
-            INSTANCE = new GridViewModelFactory(context.getApplicationContext());
+            INSTANCE = new GridViewModelFactory(context.getApplicationContext(),movieStorage);
         }
         return INSTANCE;
     }
@@ -39,9 +41,15 @@ public class GridViewModelFactory implements ViewModelProvider.Factory {
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass == GridViewModel.class) {
-            return (T)new GridViewModel();
-        }else{
-            return null;
+            return (T)new GridViewModel(movieStorage);
         }
+        if (modelClass == GridFragmentViewModel.class) {
+            return (T)new GridFragmentViewModel(movieStorage);
+        }
+
+
+
+        return null;
+
     }
 }

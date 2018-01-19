@@ -12,10 +12,14 @@ public interface GridMoviesResult  extends MviResult {
     public class LoadingGridMoviesResult  implements GridMoviesResult{
 
         Throwable throwable;
-        MviStatus status;
+        public MviStatus status;
 
         public LoadingGridMoviesResult(){
             this.status = MviStatus.SUCCESS;
+        }
+
+        public LoadingGridMoviesResult(boolean b) {
+            this.status = MviStatus.IN_FLIGHT;
         }
 
         @Override
@@ -23,15 +27,15 @@ public interface GridMoviesResult  extends MviResult {
             return status.toString();
         }
 
-        public LoadingGridMoviesResult(boolean inFligth){
-            this.status = MviStatus.IN_FLIGHT;
-        }
 
 
         public LoadingGridMoviesResult(Throwable throwable) {
             this.status = MviStatus.FAILURE;
             this.throwable = throwable;
         }
-
     }
+
+
+
+
 }

@@ -11,6 +11,11 @@ public interface  GridMoviesAction extends MviAction {
 
     public class LoadingGridMoviesAction implements GridMoviesAction {
 
+        public  SortOption option;
+
+        public LoadingGridMoviesAction(SortOption option) {
+            this.option = option;
+        }
     }
 
     public class InitGridMoviesAction implements GridMoviesAction {

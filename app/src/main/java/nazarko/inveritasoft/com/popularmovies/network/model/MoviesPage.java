@@ -27,7 +27,7 @@ public final class MoviesPage {
         return this.page;
     }
 
-    public final List getMovies() {
+    public final List<Movie> getMovies() {
         return this.movies;
     }
 
@@ -39,7 +39,7 @@ public final class MoviesPage {
         return this.totalMovies;
     }
 
-    public MoviesPage(int page,  List movies, int totalPages, int totalMovies) {
+    public MoviesPage(int page,  List<Movie> movies, int totalPages, int totalMovies) {
         this.page = page;
         this.movies = movies;
         this.totalPages = totalPages;

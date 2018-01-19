@@ -21,13 +21,14 @@ import nazarko.inveritasoft.com.popularmovies.SharedPrefs;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviView;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseActivity;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseFragment;
-import nazarko.inveritasoft.com.popularmovies.repo.MovieStorage;
+import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridViewModel;
+import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 
 public class GridActivity extends BaseActivity implements BaseFragment.ActivityListener, MviView<GridMoviesIntent,GridMoviesViewState> {
 
     public Spinner spGridSort;
     SharedPrefs sharedPrefs;
-    MovieStorage movieStorage;
+    MovieRepository movieStorage;
     List<Sort> sortOptions;
 
     private GridViewModel mViewModel;
@@ -57,7 +58,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
     private void initData() {
         sharedPrefs = new SharedPrefs( PreferenceManager.getDefaultSharedPreferences(getApplicationContext()));
-        movieStorage = new MovieStorage();
+        movieStorage = new MovieRepository(getApplicationContext());
         sortOptions = makeSortOptions();
     }
 
@@ -69,7 +70,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(this,sharedPrefs,movieStorage,sortOptions)).get(GridViewModel.class);
+        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(this,movieStorage)).get(GridViewModel.class);
         mDisposables = new CompositeDisposable();
         bind();
     }
@@ -98,7 +99,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
         result.add(new Sort(SortOption.SORT_POPULARITY, getString(R.string.sort_popularity)));
         result.add(new Sort(SortOption.SORT_RATING, getString(R.string.sort_rating)));
         result.add(new Sort(SortOption.SORT_RELEASE_DATE, getString(R.string.sort_release_date)));
-        result.add(new Sort(SortOption.SORT_FAVORITE, getString(R.string.sort_favorite)));
+        //result.add(new Sort(SortOption.SORT_FAVORITE, getString(R.string.sort_favorite)));
         return result;
     }
 
@@ -128,9 +129,8 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
     //   Spinner
     public Observable<GridMoviesIntent.LoadingGridMoviesIntent> changedFilter() {
         return RxAdapterView.itemSelections(spGridSort).map(integer -> {
-            return  new GridMoviesIntent.LoadingGridMoviesIntent();
+            return  new GridMoviesIntent.LoadingGridMoviesIntent(sortOptions.get(integer).option);
         }).skip(1);
-
     }
 
 }

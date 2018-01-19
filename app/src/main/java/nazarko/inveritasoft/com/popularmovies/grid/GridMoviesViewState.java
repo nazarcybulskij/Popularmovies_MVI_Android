@@ -11,7 +11,7 @@ public interface GridMoviesViewState extends MviViewState {
 
     public class LoadingViewState implements GridMoviesViewState{
 
-        MviStatus status;
+        public MviStatus status;
 
         public LoadingViewState( MviStatus status){
             this.status = status;

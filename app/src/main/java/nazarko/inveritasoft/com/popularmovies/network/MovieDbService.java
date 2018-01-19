@@ -1,5 +1,6 @@
 package nazarko.inveritasoft.com.popularmovies.network;
 
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import nazarko.inveritasoft.com.popularmovies.network.model.MoviesPage;
 import retrofit2.Response;
@@ -15,8 +16,10 @@ public interface MovieDbService {
 
     @GET("discover/movie")
     Single<MoviesPage> loadMovies(@Query("page")  Integer  page,
-                                  @Query("sort_by") String sortBy,
-                                  @Query("api_key") String apiKey);
+                                      @Query("sort_by") String sortBy,
+                                      @Query("api_key") String apiKey);
+
+
     @GET("movie/{id}")
     Single<Response> loadMovieInfo(@Path("id")  Integer  movieId,
                                    @Query("append_to_response")  String appendTo,
