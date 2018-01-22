@@ -5,11 +5,7 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import java.util.List;
-
 import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridFragmentViewModel;
-import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridViewModel;
-import nazarko.inveritasoft.com.popularmovies.grid.Sort;
 import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 
 /**
@@ -40,15 +36,9 @@ public class GridViewModelFactory implements ViewModelProvider.Factory {
 
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass == GridViewModel.class) {
-            return (T)new GridViewModel(movieStorage);
-        }
         if (modelClass == GridFragmentViewModel.class) {
             return (T)new GridFragmentViewModel(movieStorage);
         }
-
-
-
         return null;
 
     }

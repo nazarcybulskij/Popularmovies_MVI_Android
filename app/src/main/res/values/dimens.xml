@@ -1,12 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Keylines -->
+    <dimen name="keyline_1">16dp</dimen>
+    <dimen name="keyline_1_minus_8dp">8dp</dimen>
+    <dimen name="keyline_2">72dp</dimen>
+    <dimen name="keyline_2_minus_16dp">56dp</dimen>
+
     <!-- Spacing -->
     <dimen name="key_line_1">16dp</dimen>
     <dimen name="key_line_2">72dp</dimen>
     <dimen name="small_space">8dp</dimen>
     <dimen name="normal_space">16dp</dimen>
+    <dimen name="grid_footer_two_line_height">68dp</dimen>
 
+    <!-- Texts -->
+    <dimen name="text_size_xsmall">11sp</dimen>
+    <dimen name="text_size_small">12sp</dimen>
+    <dimen name="text_size_medium">14sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+    <dimen name="text_size_xlarge">20sp</dimen>
+    <dimen name="text_size_xxlarge">24sp</dimen>
+    <dimen name="text_size_diff_large_small">6sp</dimen>
+    <item name="movie_item_image_aspect_ratio" format="float" type="dimen">.675</item>
 
 
 </resources>

@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="red_500">#F44336</color>
     <color name="red_700">#D32F2F</color>
     <color name="amber_A400">#FFC400</color>
+
+    <color name="cardview_dark_background">#FF202020</color>
+    <color name="cardview_light_background">#FFFAFAFA</color>
+    <color name="cardview_shadow_end_color">#03000000</color>
+    <color name="cardview_shadow_start_color">#37000000</color>
+    <color name="movie_poster_placeholder">@color/material_red700</color>
+    <color name="theme_primary">@color/material_red600</color>
+
+    <color name="body_text_white">#FFFFFFFF</color>
+    <color name="body_text_disabled">#44000000</color>
+
+    <color name="body_text_1_inverse">#deffffff</color>
+    <color name="body_text_2_inverse">#8affffff</color>
+
 </resources>

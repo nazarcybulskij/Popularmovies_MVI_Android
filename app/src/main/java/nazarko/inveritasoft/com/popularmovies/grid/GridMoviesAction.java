@@ -8,14 +8,17 @@ import nazarko.inveritasoft.com.popularmovies.base.mvi.MviAction;
 
 public interface  GridMoviesAction extends MviAction {
 
-
-    public class LoadingGridMoviesAction implements GridMoviesAction {
+    public class ChangedFilterGridMoviesAction implements GridMoviesAction {
 
         public  SortOption option;
 
-        public LoadingGridMoviesAction(SortOption option) {
+        public ChangedFilterGridMoviesAction(SortOption option) {
             this.option = option;
         }
+    }
+
+    public class RefreshGridMoviesAction implements GridMoviesAction {
+
     }
 
     public class InitGridMoviesAction implements GridMoviesAction {

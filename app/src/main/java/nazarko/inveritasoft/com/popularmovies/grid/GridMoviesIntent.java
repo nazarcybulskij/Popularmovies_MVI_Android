@@ -8,25 +8,14 @@ import nazarko.inveritasoft.com.popularmovies.base.mvi.MviIntent;
 
 public interface GridMoviesIntent  extends MviIntent{
 
-    public class LoadingGridMoviesIntent implements GridMoviesIntent{
-
+    public class ChangedFilterMoviesIntent implements GridMoviesIntent{
         public SortOption option;
-
-        public LoadingGridMoviesIntent(SortOption option) {
+        public ChangedFilterMoviesIntent(SortOption option) {
             this.option = option;
         }
-
-
     }
 
     public class RefreshGridMoviesIntent implements GridMoviesIntent{
-
-        public SortOption option;
-
-        public RefreshGridMoviesIntent(SortOption option) {
-            this.option = option;
-        }
-
 
     }
 

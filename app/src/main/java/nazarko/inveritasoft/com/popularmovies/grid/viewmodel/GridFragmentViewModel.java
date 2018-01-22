@@ -14,6 +14,7 @@ import nazarko.inveritasoft.com.popularmovies.grid.GridMoviesAction;
 import nazarko.inveritasoft.com.popularmovies.grid.GridMoviesIntent;
 import nazarko.inveritasoft.com.popularmovies.grid.GridMoviesResult;
 import nazarko.inveritasoft.com.popularmovies.grid.GridMoviesViewState;
+import nazarko.inveritasoft.com.popularmovies.grid.SortOption;
 import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 
 /**
@@ -74,8 +75,13 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
 
         if (intent instanceof GridMoviesIntent.RefreshGridMoviesIntent) {
             GridMoviesIntent.RefreshGridMoviesIntent loadingGridMoviesIntent = (GridMoviesIntent.RefreshGridMoviesIntent) intent;
-            result = new GridMoviesAction.LoadingGridMoviesAction(loadingGridMoviesIntent.option);
+            result = new GridMoviesAction.RefreshGridMoviesAction();
         }
+        if (intent instanceof GridMoviesIntent.ChangedFilterMoviesIntent) {
+            GridMoviesIntent.ChangedFilterMoviesIntent loadingGridMoviesIntent = (GridMoviesIntent.ChangedFilterMoviesIntent) intent;
+            result = new GridMoviesAction.ChangedFilterGridMoviesAction(loadingGridMoviesIntent.option);
+        }
+
         if(result !=null){
             return result;
         }else{
@@ -85,31 +91,47 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
 
     // Emits loading, success and failure events.
     private ObservableTransformer<GridMoviesAction, GridMoviesResult>
-            loadMoviewPageTransformer =  upstream -> upstream.flatMap(
-            loadFirstPageAction ->  movieStorage.getOnlMovies(1,((GridMoviesAction.LoadingGridMoviesAction)loadFirstPageAction).option,true)
+            changedfilterMoviewPageTransformer =  upstream -> upstream.flatMap(
+            loadFirstPageAction ->  movieStorage.getOnlMovies(1,((GridMoviesAction.ChangedFilterGridMoviesAction)loadFirstPageAction).option,true)
                     .map(moviesPage -> moviesPage.getMovies())
-                    .map(list ->  new GridMoviesResult.LoadingGridMoviesResult())
+                    .map(list ->  new GridMoviesResult.LoadingGridMoviesResult(list))
                     .onErrorReturn(throwable ->  new GridMoviesResult.LoadingGridMoviesResult(throwable))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .startWith(new GridMoviesResult.LoadingGridMoviesResult(true)));
 
 
+    // Emits loading, success and failure events.
+    private ObservableTransformer<GridMoviesAction, GridMoviesResult>
+            refreshMoviewPageTransformer =  upstream -> upstream.flatMap(
+            loadFirstPageAction ->  movieStorage.getOnlMovies(1,true)
+                    .map(moviesPage -> moviesPage.getMovies())
+                    .map(list ->  new GridMoviesResult.RefreshGridMoviesResult(list))
+                    .onErrorReturn(throwable ->  new GridMoviesResult.RefreshGridMoviesResult(throwable))
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .startWith(new GridMoviesResult.RefreshGridMoviesResult(true)));
+
+
     private ObservableTransformer<GridMoviesAction, GridMoviesResult> actionToResultTransformer =
-            actions -> actions.publish(shared ->  shared.ofType(GridMoviesAction.LoadingGridMoviesAction.class).compose(loadMoviewPageTransformer));
-
-
+            actions -> actions.publish(shared -> Observable.merge(
+                    shared.ofType(GridMoviesAction.ChangedFilterGridMoviesAction.class).compose(changedfilterMoviewPageTransformer),
+                    shared.ofType(GridMoviesAction.RefreshGridMoviesAction.class).compose(refreshMoviewPageTransformer))
+            );
 
 
 
     private static BiFunction<GridMoviesViewState, GridMoviesResult, GridMoviesViewState> reducer = (tasksViewState, tasksResult) -> {
         if(tasksResult instanceof  GridMoviesResult.LoadingGridMoviesResult){
             GridMoviesResult.LoadingGridMoviesResult  loadingGridMoviesResult = (GridMoviesResult.LoadingGridMoviesResult) tasksResult;
-            return  new GridMoviesViewState.LoadingViewState(loadingGridMoviesResult.status);
+            return  new GridMoviesViewState.LoadingViewState(loadingGridMoviesResult.status,loadingGridMoviesResult.movies);
         }
+        if(tasksResult instanceof  GridMoviesResult.RefreshGridMoviesResult){
+            GridMoviesResult.RefreshGridMoviesResult  refreshGridMoviesResult = (GridMoviesResult.RefreshGridMoviesResult) tasksResult;
+            return  new GridMoviesViewState.RefreshViewState(refreshGridMoviesResult.status,refreshGridMoviesResult.movies);
+        }
+
         return  new GridMoviesViewState.IdleViewState();
-
-
 
     };
 

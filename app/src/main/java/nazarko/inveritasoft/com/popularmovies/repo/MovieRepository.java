@@ -1,6 +1,8 @@
 package nazarko.inveritasoft.com.popularmovies.repo;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.facebook.stetho.okhttp3.StethoInterceptor;
 import com.google.gson.Gson;
@@ -14,6 +16,7 @@ import nazarko.inveritasoft.com.popularmovies.BuildConfig;
 import nazarko.inveritasoft.com.popularmovies.Constants;
 import nazarko.inveritasoft.com.popularmovies.DB.MovieDb;
 import nazarko.inveritasoft.com.popularmovies.GridViewModelFactory;
+import nazarko.inveritasoft.com.popularmovies.SharedPrefs;
 import nazarko.inveritasoft.com.popularmovies.grid.GridMoviesResult;
 import nazarko.inveritasoft.com.popularmovies.grid.SortOption;
 import nazarko.inveritasoft.com.popularmovies.network.MovieDbService;
@@ -33,6 +36,7 @@ public class MovieRepository {
 
     private MovieDbService movieDbService;
     private MovieDb movieDb;
+    private SharedPrefs sharedPreferences;
 
     public synchronized static MovieRepository getInstance(Context context) {
         if (INSTANCE == null) {
@@ -55,13 +59,23 @@ public class MovieRepository {
                 .build()
                 .create(MovieDbService.class);
 
+        this.sharedPreferences = new SharedPrefs(PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext()));
+
         this.movieDb = MovieDb.getAppDatabase(context);
     }
 
 
 
     public Observable<MoviesPage> getOnlMovies(int page, SortOption sortOption, boolean fetchAllPages){
-        return movieDbService.loadMovies(page, sortOption.getValue(),BuildConfig.MOVIE_DB_API_KEY);
+        return sharedPreferences.writeSortPos(sortOption).flatMap(sortOption1 -> {
+            return movieDbService.loadMovies(page, sortOption1.getValue(),BuildConfig.MOVIE_DB_API_KEY);
+        });
+    }
+
+    public Observable<MoviesPage> getOnlMovies(int page, boolean fetchAllPages){
+        return sharedPreferences.getSort().flatMap(sortOption -> {
+            return movieDbService.loadMovies(page, sortOption.getValue(),BuildConfig.MOVIE_DB_API_KEY);
+        });
     }
 
 }
