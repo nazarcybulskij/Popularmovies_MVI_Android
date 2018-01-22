@@ -21,6 +21,7 @@ import nazarko.inveritasoft.com.popularmovies.SharedPrefs;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviView;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseActivity;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseFragment;
+import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridFragmentViewModel;
 import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridViewModel;
 import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 
@@ -32,6 +33,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
     List<Sort> sortOptions;
 
     private GridViewModel mViewModel;
+    private GridFragmentViewModel mViewModel1;
     // Used to manage the data flow lifecycle and avoid memory leak.
     private CompositeDisposable mDisposables;
 
@@ -70,7 +72,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(this,movieStorage)).get(GridViewModel.class);
+        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(getApplicationContext(),movieStorage)).get(GridViewModel.class);
         mDisposables = new CompositeDisposable();
         bind();
     }

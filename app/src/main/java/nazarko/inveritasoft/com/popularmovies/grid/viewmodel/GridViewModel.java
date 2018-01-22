@@ -33,7 +33,6 @@ public class GridViewModel extends ViewModel implements MviViewModel<GridMoviesI
 
     private  MovieRepository movieStorage = null;
 
-
     public GridViewModel(MovieRepository movieStorage) {
         this.mIntentsSubject = PublishSubject.create();
         this.mStatesObservable = compose();
@@ -97,8 +96,7 @@ public class GridViewModel extends ViewModel implements MviViewModel<GridMoviesI
                         .map(list ->  new GridMoviesResult.LoadingGridMoviesResult())
                         .onErrorReturn(throwable ->  new GridMoviesResult.LoadingGridMoviesResult(throwable))
                         .subscribeOn(Schedulers.io())
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .startWith(new GridMoviesResult.LoadingGridMoviesResult(true)));
+                        .observeOn(AndroidSchedulers.mainThread()));
 
 
     private ObservableTransformer<GridMoviesAction, GridMoviesResult> actionToResultTransformer =

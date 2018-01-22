@@ -39,8 +39,9 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     MovieRepository movieStorage;
 
 
-
+    private GridViewModel mViewModel1;
     private GridFragmentViewModel mViewModel;
+
     private CompositeDisposable mDisposables;
 
     private void initData() {
@@ -48,7 +49,9 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     }
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridFragmentViewModel.class);
+        mViewModel = ViewModelProviders.of(getActivity(), GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridFragmentViewModel.class);
+        mViewModel1 = ViewModelProviders.of(getActivity(), GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridViewModel.class);
+
         mDisposables = new CompositeDisposable();
         bind();
     }
@@ -81,7 +84,9 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     @Override
     public Observable<GridMoviesIntent> intents() {
-        return Observable.merge(initIntent(),refreshIntent());
+        return Observable.merge(initIntent(),refreshIntent(),mViewModel1.states()
+                .map(gridMoviesViewState ->   new GridMoviesIntent.RefreshGridMoviesIntent(SortOption.SORT_POPULARITY)
+                ));
     }
 
 
