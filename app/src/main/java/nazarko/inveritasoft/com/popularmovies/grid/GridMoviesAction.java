@@ -26,4 +26,6 @@ public interface  GridMoviesAction extends MviAction {
     }
 
 
+    public class LoadMoreGridMoviesAction implements GridMoviesAction {
+    }
 }

@@ -17,7 +17,8 @@ public interface MovieDbService {
     @GET("discover/movie")
     Observable<MoviesPage> loadMovies(@Query("page")  Integer  page,
                                       @Query("sort_by") String sortBy,
-                                      @Query("api_key") String apiKey);
+                                      @Query("api_key") String apiKey
+                                     );
 
 
     @GET("movie/{id}")

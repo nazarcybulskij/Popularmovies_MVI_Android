@@ -12,6 +12,5 @@ public enum MviStatus {
 
     IN_FLIGHT,
 
-
-    NONE
+    IDLE
 }

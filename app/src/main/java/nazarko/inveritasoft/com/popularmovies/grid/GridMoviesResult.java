@@ -67,6 +67,32 @@ public interface GridMoviesResult  extends MviResult {
     }
 
 
+    public class LoadMoreGridMoviesResult implements GridMoviesResult{
+
+        public List<Movie> movies;
+        public Throwable throwable;
+        public MviStatus status;
+
+        public LoadMoreGridMoviesResult(boolean b) {
+            this.status = MviStatus.IN_FLIGHT;
+        }
+
+        public LoadMoreGridMoviesResult(List<Movie> movies) {
+            this.movies = movies;
+            this.status = MviStatus.SUCCESS;
+        }
+
+        public LoadMoreGridMoviesResult(Throwable throwable) {
+            this.status = MviStatus.FAILURE;
+            this.throwable = throwable;
+        }
+
+        @Override
+        public String toString() {
+            return status.toString();
+        }
 
 
+
+    }
 }

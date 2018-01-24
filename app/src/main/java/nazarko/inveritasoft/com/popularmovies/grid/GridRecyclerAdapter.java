@@ -27,25 +27,47 @@ import nazarko.inveritasoft.com.popularmovies.utils.UiUtils;
  * Created by nazarko on 22.01.18.
  */
 
-public class GridRecyclerAdapter extends RecyclerView.Adapter<GridRecyclerAdapter.ViewHolder>{
+public class GridRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+
+    public final int TYPE_MOVIE = R.layout.item_movie;
+    public final int TYPE_PROGRESS = R.layout.item_progress;
 
     List<Movie> movies = new ArrayList<Movie>();
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v =  LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie, parent, false);
-        ViewHolder vh = new ViewHolder(v);
-        return vh;
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (TYPE_MOVIE==viewType){
+            View v =  LayoutInflater.from(parent.getContext()).inflate(R.layout.item_movie, parent, false);
+            ViewHolder vh = new ViewHolder(v);
+            return vh;
+        }else{
+            View v =  LayoutInflater.from(parent.getContext()).inflate(R.layout.item_progress, parent, false);
+            ViewHolder vh = new ViewHolder(v);
+            return vh;
+
+        }
+
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.bind(movies.get(position));
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (getItemViewType(position)==TYPE_MOVIE){
+            ((ViewHolder)holder).bind(movies.get(position));
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position<movies.size()){
+            return TYPE_MOVIE;
+        }else{
+            return TYPE_PROGRESS;
+        }
     }
 
     @Override
     public int getItemCount() {
-        return movies.size();
+        return movies.size()+1;
     }
 
     public  void swapData(List<Movie> movies){
@@ -94,7 +116,7 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<GridRecyclerAdapte
                 mMovieId = movie.getId();
             }
 
-            String url = ImageUtils.buildPosterUrl(movie.getPosterPath(), 200);
+            String url = ImageUtils.buildPosterUrl(movie.getPosterPath(), 100);
 
             Glide.with(mTitleView.getContext())
                     .load(url)

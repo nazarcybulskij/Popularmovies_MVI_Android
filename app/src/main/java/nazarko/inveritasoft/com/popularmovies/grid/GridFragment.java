@@ -18,12 +18,15 @@ import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.support.v4.widget.RxSwipeRefreshLayout;
 import com.jakewharton.rxbinding2.widget.RxAdapterView;
+import com.mugen.Mugen;
+import com.mugen.MugenCallbacks;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.subjects.PublishSubject;
 import nazarko.inveritasoft.com.popularmovies.GridViewModelFactory;
 import nazarko.inveritasoft.com.popularmovies.R;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviStatus;
@@ -31,6 +34,7 @@ import nazarko.inveritasoft.com.popularmovies.base.mvi.MviView;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseFragment;
 import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridFragmentViewModel;
 import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
+import nazarko.inveritasoft.com.popularmovies.utils.ListUtils;
 
 /**
  * Created by nazarko on 16.01.18.
@@ -42,6 +46,8 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     private SwipeRefreshLayout srlGrid;
     private Spinner spGridSort;
     private RecyclerView rvGrid;
+    private  View emptyView;
+    private  View pbGrid;
 
     private  GridRecyclerAdapter gridRecyclerAdapter;
 
@@ -50,6 +56,8 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     private GridFragmentViewModel mViewModel;
     private CompositeDisposable mDisposables;
     private List<Sort> sortOptions;
+
+    private PublishSubject<GridMoviesIntent.LoadMoreGridMoviesIntent> mLoadNextPageIntentPublisher = PublishSubject.create();
 
     private void initData() {
        movieStorage = MovieRepository.getInstance(getActivity().getApplicationContext());
@@ -86,6 +94,8 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     private void initViews(View root) {
         srlGrid = (SwipeRefreshLayout)root.findViewById(R.id.srlGrid);
         rvGrid = (RecyclerView)root.findViewById(R.id.rvGrid);
+        emptyView = root.findViewById(R.id.empty_view);
+        pbGrid = root.findViewById(R.id.pb_grid);
         Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(null);
@@ -98,15 +108,32 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
         layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-//                if (gridRecyclerAdapter.getItemViewType(position) == R.layout.row_progress)
-//                    return spanCount;
-//                else
+                if (gridRecyclerAdapter.getItemViewType(position) == R.layout.item_progress)
+                    return spanCount;
+                else
                     return 1;
             }
         });
         rvGrid.setLayoutManager(layoutManager);
         rvGrid.setHasFixedSize(true);
         rvGrid.setAdapter(gridRecyclerAdapter);
+
+        Mugen.with(rvGrid, new MugenCallbacks() {
+            @Override
+            public void onLoadMore() {
+                mLoadNextPageIntentPublisher.onNext(new GridMoviesIntent.LoadMoreGridMoviesIntent());
+            }
+
+            @Override
+            public boolean isLoading() {
+                return false;
+            }
+
+            @Override
+            public boolean hasLoadedAllItems() {
+                return false;
+            }
+        }).start();
     }
 
     private void setupSortSpinner() {
@@ -126,40 +153,32 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     @Override
     public Observable<GridMoviesIntent> intents() {
-        return Observable.merge(initIntent(),refreshIntent(),changedFilter());
+        return Observable.merge(initIntent(),refreshIntent(),changedFilter(),mLoadNextPageIntentPublisher);
     }
 
 
 
     @Override
     public void render(GridMoviesViewState state) {
-        if (state instanceof  GridMoviesViewState.RefreshViewState ){
-            GridMoviesViewState.RefreshViewState viewState = (GridMoviesViewState.RefreshViewState) state;
+        if (state instanceof  GridMoviesViewState.GridMoviewViewState ){
+            GridMoviesViewState.GridMoviewViewState viewState = (GridMoviesViewState.GridMoviewViewState) state;
             if (viewState.status == MviStatus.IN_FLIGHT){
                 srlGrid.setRefreshing(true);
+                pbGrid.setVisibility(View.VISIBLE);
             }
             if (viewState.status == MviStatus.SUCCESS){
                 srlGrid.setRefreshing(false);
                 gridRecyclerAdapter.swapData(viewState.movies);
+                pbGrid.setVisibility(View.INVISIBLE);
+                emptyView.setVisibility(ListUtils.isEmpty(viewState.movies) ? View.VISIBLE : View.INVISIBLE );
             }
             if (viewState.status == MviStatus.FAILURE){
                 srlGrid.setRefreshing(false);
                 Toast.makeText(getActivity(),"error",Toast.LENGTH_SHORT).show();
             }
-        }
-        if (state instanceof  GridMoviesViewState.LoadingViewState ){
-            GridMoviesViewState.LoadingViewState viewState = (GridMoviesViewState.LoadingViewState) state;
-            if (viewState.status == MviStatus.IN_FLIGHT){
 
-            }
-            if (viewState.status == MviStatus.SUCCESS){
-                gridRecyclerAdapter.swapData(viewState.movies);
-            }
-            if (viewState.status == MviStatus.FAILURE){
-
-                Toast.makeText(getActivity(),"error",Toast.LENGTH_SHORT).show();
-            }
         }
+
     }
 
     //  init
