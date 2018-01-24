@@ -46,7 +46,7 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
                 .compose(intentFilter)
                 .map(this::actionFromIntent)
                 .compose(actionToResultTransformer)
-                .scan(new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<Movie>()), reducer)
+                .scan(new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<Movie>(),false,false,true), reducer)
                 .replay(1)
                 .autoConnect(0);
     }
@@ -143,16 +143,28 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
 
     private  BiFunction<GridMoviesViewState, GridMoviesResult, GridMoviesViewState> reducer = (tasksViewState, tasksResult) -> {
 
+        GridMoviesViewState.GridMoviewViewState gridMoviesViewState = (GridMoviesViewState.GridMoviewViewState)tasksViewState;
+
         if(tasksResult instanceof  GridMoviesResult.RefreshGridMoviesResult){
             GridMoviesResult.RefreshGridMoviesResult  refreshGridMoviesResult = (GridMoviesResult.RefreshGridMoviesResult) tasksResult;
+
             if (refreshGridMoviesResult.status == MviStatus.SUCCESS) {
                 sortPage = new SortPage(1);
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.SUCCESS,refreshGridMoviesResult.movies);
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.SUCCESS,refreshGridMoviesResult.movies,
+                        false,
+                        gridMoviesViewState.loadmore,
+                        gridMoviesViewState.load);
             }
             if(refreshGridMoviesResult.status == MviStatus.FAILURE){
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.FAILURE,new ArrayList<Movie>());
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.FAILURE,new ArrayList<Movie>(),
+                        true,
+                        gridMoviesViewState.loadmore,
+                        gridMoviesViewState.load);
             }else{
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IN_FLIGHT,new ArrayList<Movie>());
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IN_FLIGHT,new ArrayList<Movie>(),
+                        true,
+                        gridMoviesViewState.loadmore,
+                        gridMoviesViewState.load);
             }
         }
 
@@ -160,12 +172,21 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
             GridMoviesResult.LoadingGridMoviesResult  loadingGridMoviesResult = (GridMoviesResult.LoadingGridMoviesResult) tasksResult;
             if (loadingGridMoviesResult.status == MviStatus.SUCCESS) {
                 sortPage = new SortPage(1);
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.SUCCESS,loadingGridMoviesResult.movies);
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.SUCCESS,loadingGridMoviesResult.movies,
+                         gridMoviesViewState.refresh,
+                         gridMoviesViewState.loadmore,
+                        false);
             }
             if(loadingGridMoviesResult.status == MviStatus.FAILURE){
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.FAILURE,new ArrayList<Movie>());
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.FAILURE,new ArrayList<Movie>(),
+                         gridMoviesViewState.refresh,
+                         gridMoviesViewState.loadmore,
+                        true);
             }else{
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IN_FLIGHT,new ArrayList<Movie>());
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IN_FLIGHT,new ArrayList<Movie>(),
+                        gridMoviesViewState.refresh,
+                        gridMoviesViewState.loadmore,
+                        true);
             }
         }
 
@@ -175,43 +196,26 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
                 sortPage.updatePage();
                 List<Movie> movies = ((GridMoviesViewState.GridMoviewViewState)tasksViewState).movies ;
                 movies.addAll(loadMoreGridMoviesResult.movies);
-                return  new GridMoviesViewState.GridMoviewViewState(loadMoreGridMoviesResult.status,movies);
+                return  new GridMoviesViewState.GridMoviewViewState(loadMoreGridMoviesResult.status,movies,
+                        gridMoviesViewState.refresh,
+                        true,
+                        gridMoviesViewState.load);
             }
             if(loadMoreGridMoviesResult.status == MviStatus.FAILURE){
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.FAILURE,((GridMoviesViewState.GridMoviewViewState)tasksViewState).movies );
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.FAILURE,((GridMoviesViewState.GridMoviewViewState)tasksViewState).movies,
+                        gridMoviesViewState.refresh,
+                        true,
+                        gridMoviesViewState.load);
             }else{
-                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IN_FLIGHT,((GridMoviesViewState.GridMoviewViewState)tasksViewState).movies );
+                return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IN_FLIGHT,((GridMoviesViewState.GridMoviewViewState)tasksViewState).movies,
+                        gridMoviesViewState.refresh,
+                        true,
+                        gridMoviesViewState.load);
             }
 
         }
 
-
-//        if(tasksResult instanceof  GridMoviesResult.LoadingGridMoviesResult){
-//            GridMoviesResult.LoadingGridMoviesResult  loadingGridMoviesResult = (GridMoviesResult.LoadingGridMoviesResult) tasksResult;
-//            if (loadingGridMoviesResult.status== MviStatus.SUCCESS)
-//                sortPage = new SortPage(1);
-//
-//            return  new GridMoviesViewState.GridMoviewViewState(loadingGridMoviesResult.status,loadingGridMoviesResult.movies);
-//        }
-//
-//        if(tasksResult instanceof  GridMoviesResult.RefreshGridMoviesResult){
-//            GridMoviesResult.RefreshGridMoviesResult  refreshGridMoviesResult = (GridMoviesResult.RefreshGridMoviesResult) tasksResult;
-//            if (refreshGridMoviesResult.status== MviStatus.SUCCESS) {
-//                sortPage = new SortPage(1);
-//                return  new GridMoviesViewState.GridMoviewViewState(refreshGridMoviesResult.status,refreshGridMoviesResult.movies);
-//            }
-//        }
-//
-//        if(tasksResult instanceof  GridMoviesResult.LoadMoreGridMoviesResult){
-//            GridMoviesResult.LoadMoreGridMoviesResult  loadMoreGridMoviesResult = (GridMoviesResult.LoadMoreGridMoviesResult) tasksResult;
-//            if (loadMoreGridMoviesResult.status== MviStatus.SUCCESS)
-//                sortPage.updatePage();
-//            List<Movie> movies = ((GridMoviesViewState.GridMoviewViewState)tasksViewState).movies ;
-//            movies.addAll(loadMoreGridMoviesResult.movies);
-//            return  new GridMoviesViewState.GridMoviewViewState(loadMoreGridMoviesResult.status,movies);
-//        }
-//
-        return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<>());
+        return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<>(),false,false,true);
 
     };
 

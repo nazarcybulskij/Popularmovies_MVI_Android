@@ -162,19 +162,20 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     public void render(GridMoviesViewState state) {
         if (state instanceof  GridMoviesViewState.GridMoviewViewState ){
             GridMoviesViewState.GridMoviewViewState viewState = (GridMoviesViewState.GridMoviewViewState) state;
-            if (viewState.status == MviStatus.IN_FLIGHT){
-                srlGrid.setRefreshing(true);
-                pbGrid.setVisibility(View.VISIBLE);
-            }
+
+
+            pbGrid.setVisibility(viewState.load  ? View.VISIBLE : View.INVISIBLE);
+            srlGrid.setRefreshing(viewState.refresh);
+            rvGrid.setVisibility(viewState.load  ? View.INVISIBLE : View.VISIBLE);
+
+
             if (viewState.status == MviStatus.SUCCESS){
-                srlGrid.setRefreshing(false);
                 gridRecyclerAdapter.swapData(viewState.movies);
-                pbGrid.setVisibility(View.INVISIBLE);
                 emptyView.setVisibility(ListUtils.isEmpty(viewState.movies) ? View.VISIBLE : View.INVISIBLE );
             }
             if (viewState.status == MviStatus.FAILURE){
-                srlGrid.setRefreshing(false);
-                Toast.makeText(getActivity(),"error",Toast.LENGTH_SHORT).show();
+                pbGrid.setVisibility(View.INVISIBLE);
+                Toast.makeText(getContext(),"Error",Toast.LENGTH_SHORT).show();
             }
 
         }

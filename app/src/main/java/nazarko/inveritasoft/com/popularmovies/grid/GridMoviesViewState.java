@@ -17,10 +17,18 @@ public interface GridMoviesViewState extends MviViewState {
         public List<Movie> movies ;
         public MviStatus status;
 
-        public GridMoviewViewState( MviStatus status,List<Movie> movies){
-            this.status = status;
+        public boolean  refresh;
+        public boolean  loadmore;
+        public boolean  load;
+
+        public GridMoviewViewState( MviStatus status,List<Movie> movies, boolean refresh, boolean loadmore, boolean load) {
             this.movies = movies;
+            this.status = status;
+            this.refresh = refresh;
+            this.loadmore = loadmore;
+            this.load = load;
         }
+
 
         @Override
         public String toString() {
