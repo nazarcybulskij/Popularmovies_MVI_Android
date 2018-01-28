@@ -65,7 +65,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     }
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridFragmentViewModel.class);
+        mViewModel = ViewModelProviders.of(getActivity(), GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridFragmentViewModel.class);
         mDisposables = new CompositeDisposable();
         bind();
     }
