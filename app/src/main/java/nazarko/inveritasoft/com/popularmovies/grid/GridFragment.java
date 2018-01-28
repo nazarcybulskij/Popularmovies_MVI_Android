@@ -44,7 +44,6 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
 
     private SwipeRefreshLayout srlGrid;
-    private Spinner spGridSort;
     private RecyclerView rvGrid;
     private  View emptyView;
     private  View pbGrid;
@@ -55,13 +54,11 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     private GridFragmentViewModel mViewModel;
     private CompositeDisposable mDisposables;
-    private List<Sort> sortOptions;
 
     private PublishSubject<GridMoviesIntent.LoadMoreGridMoviesIntent> mLoadNextPageIntentPublisher = PublishSubject.create();
 
     private void initData() {
        movieStorage = MovieRepository.getInstance(getActivity().getApplicationContext());
-       sortOptions = makeSortOptions();
     }
 
     private void initViewModel() {
@@ -72,7 +69,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     private void bind() {
         mDisposables.add(mViewModel.states().subscribe(action->{
-            Log.d("TAG","RENDER "+ action.toString()) ;
+            Log.d("TAG","RENDER "+ action.toString()+action.hashCode()) ;
             render(action);
         },throwable -> {
             Log.d("TAG",throwable.getMessage());
@@ -96,12 +93,6 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
         rvGrid = (RecyclerView)root.findViewById(R.id.rvGrid);
         emptyView = root.findViewById(R.id.empty_view);
         pbGrid = root.findViewById(R.id.pb_grid);
-        Toolbar toolbar = (Toolbar) root.findViewById(R.id.toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
-        ((AppCompatActivity)getActivity()).getSupportActionBar().setTitle(null);
-        spGridSort = (Spinner)root.findViewById(R.id.spGridSort);
-        setupSortSpinner();
-
         int spanCount = 2;
         gridRecyclerAdapter = new GridRecyclerAdapter();
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(),spanCount);
@@ -136,11 +127,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
         }).start();
     }
 
-    private void setupSortSpinner() {
-        ArrayAdapter<Sort> adapter = new ArrayAdapter<Sort>(getActivity(),R.layout.spinner_item_toolbar,sortOptions);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spGridSort.setAdapter(adapter);
-    }
+
 
     private List<Sort> makeSortOptions() {
         List<Sort> result = new ArrayList<>();
@@ -153,7 +140,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     @Override
     public Observable<GridMoviesIntent> intents() {
-        return Observable.merge(initIntent(),refreshIntent(),changedFilter(),mLoadNextPageIntentPublisher);
+        return Observable.merge(initIntent(),refreshIntent(),mLoadNextPageIntentPublisher);
     }
 
 
@@ -194,12 +181,6 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
        });
     }
 
-    //  Spinner
-    public Observable<GridMoviesIntent.ChangedFilterMoviesIntent> changedFilter() {
-        return RxAdapterView.itemSelections(spGridSort).map(integer -> {
-            return  new GridMoviesIntent.ChangedFilterMoviesIntent(sortOptions.get(integer).option);
-        }).skip(1);
-    }
 
     @Override
     public void onDestroy() {
