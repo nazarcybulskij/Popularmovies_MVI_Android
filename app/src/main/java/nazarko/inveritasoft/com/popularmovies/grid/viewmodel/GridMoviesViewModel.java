@@ -26,7 +26,7 @@ import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
  * Created by nazarko on 19.01.18.
  */
 
-public class GridFragmentViewModel extends ViewModel implements MviViewModel<GridMoviesIntent,GridMoviesViewState> {
+public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridMoviesIntent,GridMoviesViewState> {
 
     private PublishSubject<GridMoviesIntent> mIntentsSubject;
     private Observable<GridMoviesViewState> mStatesObservable;
@@ -35,7 +35,7 @@ public class GridFragmentViewModel extends ViewModel implements MviViewModel<Gri
     private MovieRepository movieStorage = null;
 
 
-    public GridFragmentViewModel(MovieRepository movieStorage) {
+    public GridMoviesViewModel(MovieRepository movieStorage) {
         this.mIntentsSubject = PublishSubject.create();
         this.mStatesObservable = compose();
         this.movieStorage = movieStorage;

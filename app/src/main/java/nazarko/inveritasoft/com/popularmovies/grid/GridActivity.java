@@ -2,7 +2,6 @@ package nazarko.inveritasoft.com.popularmovies.grid;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.ArrayAdapter;
@@ -17,11 +16,10 @@ import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
 import nazarko.inveritasoft.com.popularmovies.GridViewModelFactory;
 import nazarko.inveritasoft.com.popularmovies.R;
-import nazarko.inveritasoft.com.popularmovies.SharedPrefs;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviView;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseActivity;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseFragment;
-import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridFragmentViewModel;
+import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridMoviesViewModel;
 import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 
 public class GridActivity extends BaseActivity implements BaseFragment.ActivityListener, MviView<GridMoviesIntent,GridMoviesViewState> {
@@ -31,8 +29,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
     MovieRepository movieStorage;
     List<Sort> sortOptions;
 
-    private GridFragmentViewModel mViewModel;
-    // Used to manage the data flow lifecycle and avoid memory leak.
+    private GridMoviesViewModel mViewModel;
     private CompositeDisposable mDisposables;
 
 
@@ -69,7 +66,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(getApplicationContext(),movieStorage)).get(GridFragmentViewModel.class);
+        mViewModel = ViewModelProviders.of(this, GridViewModelFactory.getInstance(getApplicationContext(),movieStorage)).get(GridMoviesViewModel.class);
         mDisposables = new CompositeDisposable();
         bind();
     }

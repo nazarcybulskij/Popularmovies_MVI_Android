@@ -4,25 +4,17 @@ package nazarko.inveritasoft.com.popularmovies.grid;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.jakewharton.rxbinding2.support.v4.widget.RxSwipeRefreshLayout;
-import com.jakewharton.rxbinding2.widget.RxAdapterView;
 import com.mugen.Mugen;
 import com.mugen.MugenCallbacks;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.CompositeDisposable;
@@ -32,7 +24,7 @@ import nazarko.inveritasoft.com.popularmovies.R;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviStatus;
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviView;
 import nazarko.inveritasoft.com.popularmovies.base.project.BaseFragment;
-import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridFragmentViewModel;
+import nazarko.inveritasoft.com.popularmovies.grid.viewmodel.GridMoviesViewModel;
 import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 import nazarko.inveritasoft.com.popularmovies.utils.ListUtils;
 
@@ -45,14 +37,14 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     private SwipeRefreshLayout srlGrid;
     private RecyclerView rvGrid;
-    private  View emptyView;
-    private  View pbGrid;
+    private View emptyView;
+    private View pbGrid;
 
     private  GridRecyclerAdapter gridRecyclerAdapter;
 
     MovieRepository movieStorage;
 
-    private GridFragmentViewModel mViewModel;
+    private GridMoviesViewModel mViewModel;
     private CompositeDisposable mDisposables;
 
     private PublishSubject<GridMoviesIntent.LoadMoreGridMoviesIntent> mLoadNextPageIntentPublisher = PublishSubject.create();
@@ -62,7 +54,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     }
 
     private void initViewModel() {
-        mViewModel = ViewModelProviders.of(getActivity(), GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridFragmentViewModel.class);
+        mViewModel = ViewModelProviders.of(getActivity(), GridViewModelFactory.getInstance(getContext().getApplicationContext(),movieStorage)).get(GridMoviesViewModel.class);
         mDisposables = new CompositeDisposable();
         bind();
     }
@@ -128,14 +120,6 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
     }
 
 
-
-    private List<Sort> makeSortOptions() {
-        List<Sort> result = new ArrayList<>();
-        result.add(new Sort(SortOption.SORT_POPULARITY, getString(R.string.sort_popularity)));
-        result.add(new Sort(SortOption.SORT_RATING, getString(R.string.sort_rating)));
-        result.add(new Sort(SortOption.SORT_RELEASE_DATE, getString(R.string.sort_release_date)));
-        return result;
-    }
 
 
     @Override
