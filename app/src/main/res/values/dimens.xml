@@ -22,6 +22,7 @@
     <dimen name="text_size_xlarge">20sp</dimen>
     <dimen name="text_size_xxlarge">24sp</dimen>
     <dimen name="text_size_diff_large_small">6sp</dimen>
+    <dimen name="activity_horizontal_margin">16dp</dimen>
     <item name="movie_item_image_aspect_ratio" format="float" type="dimen">.675</item>
 
 

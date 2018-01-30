@@ -80,7 +80,6 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         View mContentContainer;
         ImageView mImageView;
         TextView mTitleView;
-        TextView mGenresView;
         View mFooterView;
         ImageButton mFavoriteButton;
 
@@ -94,21 +93,19 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public ViewHolder(View v) {
             super(v);
-
             mContentContainer = v.findViewById(R.id.movie_item_container);
             mImageView = v.findViewById(R.id.movie_item_image);
             mTitleView = v.findViewById(R.id.movie_item_title);
-            mGenresView = v.findViewById(R.id.movie_item_genres);
             mFooterView = v.findViewById(R.id.movie_item_footer);
             mFavoriteButton = v.findViewById(R.id.movie_item_btn_favorite);
             mColorBackground = ContextCompat.getColor(v.getContext(),R.color.theme_primary);
+
             mColorTitle = ContextCompat.getColor(v.getContext(),R.color.body_text_white);
             mColorSubtitle = ContextCompat.getColor(v.getContext(),R.color.body_text_1_inverse);
         }
 
         public void bind(final Movie movie) {
             mTitleView.setText(movie.getTitle());
-            mGenresView.setText(UiUtils.joinGenres(movie.getGenres(), ", ", mBuilder));
 
             // prevents unnecessary color blinking
             if (mMovieId != movie.getId()) {
@@ -130,7 +127,6 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         private void resetColors() {
             mFooterView.setBackgroundColor(mColorBackground);
             mTitleView.setTextColor(mColorTitle);
-            mGenresView.setTextColor(mColorSubtitle);
             mFavoriteButton.setColorFilter(mColorTitle, PorterDuff.Mode.MULTIPLY);
         }
 
@@ -138,7 +134,6 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             if (swatch != null) {
                 mFooterView.setBackgroundColor(swatch.getRgb());
                 mTitleView.setTextColor(swatch.getBodyTextColor());
-                mGenresView.setTextColor(swatch.getTitleTextColor());
                 mFavoriteButton.setColorFilter(swatch.getBodyTextColor(), PorterDuff.Mode.MULTIPLY);
             }
         }

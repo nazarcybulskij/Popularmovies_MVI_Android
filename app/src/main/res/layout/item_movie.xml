@@ -59,18 +59,17 @@
                 <TextView
                     android:id="@+id/movie_item_title"
                     style="@style/MovieItemText"
-                    android:lines="1"
                     android:textColor="@color/body_text_white"
-                    android:textSize="@dimen/text_size_large"
                     android:textStyle="bold"
+                    android:layout_height="48dp"
+                    android:layout_gravity="bottom"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:textSize="12sp"
+                    android:maxLines="2"
                     tools:text="Jurassic World" />
 
-                <TextView
-                    android:id="@+id/movie_item_genres"
-                    style="@style/MovieItemText"
-                    android:textColor="@color/body_text_1_inverse"
-                    android:textSize="@dimen/text_size_medium"
-                    tools:text="Action" />
 
             </LinearLayout>
 
