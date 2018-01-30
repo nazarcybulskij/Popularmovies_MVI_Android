@@ -61,7 +61,7 @@ public class GridFragment extends BaseFragment<BaseFragment.ActivityListener> im
 
     private void bind() {
         mDisposables.add(mViewModel.states().subscribe(action->{
-            Log.d("TAG","RENDER "+ action.toString()+action.hashCode()) ;
+            Log.d("TAG","RENDER "+ action.toString()) ;
             render(action);
         },throwable -> {
             Log.d("TAG",throwable.getMessage());

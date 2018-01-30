@@ -1,5 +1,6 @@
 package nazarko.inveritasoft.com.popularmovies.grid;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import nazarko.inveritasoft.com.popularmovies.base.mvi.MviStatus;
@@ -33,6 +34,10 @@ public interface GridMoviesViewState extends MviViewState {
         @Override
         public String toString() {
             return status.toString();
+        }
+
+        public static GridMoviewViewState idle(){
+            return new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<Movie>(),false,false,true);
         }
     }
 

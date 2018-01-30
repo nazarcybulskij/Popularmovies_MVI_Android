@@ -73,7 +73,7 @@ public class GridActivity extends BaseActivity implements BaseFragment.ActivityL
 
     private void bind() {
         mDisposables.add(mViewModel.states().subscribe(action->{
-            Log.d("TAG","RENDER "+ action.toString()+action.hashCode()) ;
+            Log.d("TAG","RENDER "+ action.toString()) ;
             render(action);
         },throwable -> {
             Log.d("TAG",throwable.getMessage());

@@ -29,7 +29,9 @@ import nazarko.inveritasoft.com.popularmovies.repo.MovieRepository;
 public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridMoviesIntent,GridMoviesViewState> {
 
     private PublishSubject<GridMoviesIntent> mIntentsSubject;
+
     private Observable<GridMoviesViewState> mStatesObservable;
+
     private SortPage  sortPage ;
 
     private MovieRepository movieStorage = null;
@@ -43,12 +45,12 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
 
     private Observable<GridMoviesViewState> compose() {
         return  mIntentsSubject
-                .compose(intentFilter)
-                .map(this::actionFromIntent)
-                .compose(actionToResultTransformer)
-                .scan(new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<Movie>(),false,false,true), reducer)
-                .replay(1)
-                .autoConnect(0);
+                    .compose(intentFilter)
+                    .map(this::actionFromIntent)
+                    .compose(actionToResultTransformer)
+                    .scan(GridMoviesViewState.GridMoviewViewState.idle(), reducer)
+                    .replay(1)
+                    .autoConnect(0);
     }
 
 
@@ -73,25 +75,25 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
 
     private GridMoviesAction actionFromIntent(MviIntent intent) {
 
-        GridMoviesAction result = null;
+        GridMoviesAction action = null;
 
         if (intent instanceof GridMoviesIntent.InitGridMoviesIntent){
-            result = new GridMoviesAction.InitGridMoviesAction();
+            action = new GridMoviesAction.InitGridMoviesAction();
         }
         if (intent instanceof GridMoviesIntent.LoadMoreGridMoviesIntent){
-            result = new GridMoviesAction.LoadMoreGridMoviesAction();
+            action = new GridMoviesAction.LoadMoreGridMoviesAction();
         }
         if (intent instanceof GridMoviesIntent.RefreshGridMoviesIntent) {
             GridMoviesIntent.RefreshGridMoviesIntent loadingGridMoviesIntent = (GridMoviesIntent.RefreshGridMoviesIntent) intent;
-            result = new GridMoviesAction.RefreshGridMoviesAction();
+            action = new GridMoviesAction.RefreshGridMoviesAction();
         }
         if (intent instanceof GridMoviesIntent.ChangedFilterMoviesIntent) {
             GridMoviesIntent.ChangedFilterMoviesIntent loadingGridMoviesIntent = (GridMoviesIntent.ChangedFilterMoviesIntent) intent;
-            result = new GridMoviesAction.ChangedFilterGridMoviesAction(loadingGridMoviesIntent.option);
+            action = new GridMoviesAction.ChangedFilterGridMoviesAction(loadingGridMoviesIntent.option);
         }
 
-        if(result !=null){
-            return result;
+        if(action !=null){
+            return action;
         }else{
             throw new IllegalArgumentException("do not know how to treat this intent " + intent);
         }
@@ -100,7 +102,7 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
     // Emits loading, success and failure events.
     private ObservableTransformer<GridMoviesAction, GridMoviesResult>
             changedfilterMoviewPageTransformer =  upstream -> upstream.flatMap(
-            loadFirstPageAction ->  movieStorage.getOnlMovies(1,((GridMoviesAction.ChangedFilterGridMoviesAction)loadFirstPageAction).option,true)
+            changedfilterPageAction ->  movieStorage.getOnlMovies(1,((GridMoviesAction.ChangedFilterGridMoviesAction)changedfilterPageAction).option,true)
                     .map(moviesPage -> moviesPage.getMovies())
                     .map(list ->  new GridMoviesResult.LoadingGridMoviesResult(list))
                     .onErrorReturn(throwable ->  new GridMoviesResult.LoadingGridMoviesResult(throwable))
@@ -112,7 +114,7 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
     // Emits loading, success and failure events.
     private ObservableTransformer<GridMoviesAction, GridMoviesResult>
             refreshMoviewPageTransformer =  upstream -> upstream.flatMap(
-            loadFirstPageAction ->  movieStorage.getOnlMovies(1,true)
+            refreshPageAction ->  movieStorage.getOnlMovies(1,true)
                     .map(moviesPage -> moviesPage.getMovies())
                     .map(list ->  new GridMoviesResult.RefreshGridMoviesResult(list))
                     .onErrorReturn(throwable ->  new GridMoviesResult.RefreshGridMoviesResult(throwable))
@@ -124,7 +126,7 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
     // Emits loading, success and failure events.
     private ObservableTransformer<GridMoviesAction, GridMoviesResult>
             loadMoreMoviewPageTransformer =  upstream -> upstream.flatMap(
-            loadFirstPageAction ->  movieStorage.getOnlMovies(sortPage.page+1,true)
+            loadMorePageAction ->  movieStorage.getOnlMovies(sortPage.page+1,true)
                     .map(moviesPage -> moviesPage.getMovies())
                     .map(list ->  new GridMoviesResult.LoadMoreGridMoviesResult(list))
                     .onErrorReturn(throwable ->  new GridMoviesResult.LoadMoreGridMoviesResult(throwable))
@@ -142,12 +144,9 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
 
 
     private  BiFunction<GridMoviesViewState, GridMoviesResult, GridMoviesViewState> reducer = (tasksViewState, tasksResult) -> {
-
         GridMoviesViewState.GridMoviewViewState gridMoviesViewState = (GridMoviesViewState.GridMoviewViewState)tasksViewState;
-
         if(tasksResult instanceof  GridMoviesResult.RefreshGridMoviesResult){
             GridMoviesResult.RefreshGridMoviesResult  refreshGridMoviesResult = (GridMoviesResult.RefreshGridMoviesResult) tasksResult;
-
             if (refreshGridMoviesResult.status == MviStatus.SUCCESS) {
                 sortPage = new SortPage(1);
                 return  new GridMoviesViewState.GridMoviewViewState(MviStatus.SUCCESS,refreshGridMoviesResult.movies,
@@ -167,7 +166,6 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
                         gridMoviesViewState.load);
             }
         }
-
         if(tasksResult instanceof  GridMoviesResult.LoadingGridMoviesResult){
             GridMoviesResult.LoadingGridMoviesResult  loadingGridMoviesResult = (GridMoviesResult.LoadingGridMoviesResult) tasksResult;
             if (loadingGridMoviesResult.status == MviStatus.SUCCESS) {
@@ -189,7 +187,6 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
                         true);
             }
         }
-
         if(tasksResult instanceof  GridMoviesResult.LoadMoreGridMoviesResult){
             GridMoviesResult.LoadMoreGridMoviesResult  loadMoreGridMoviesResult = (GridMoviesResult.LoadMoreGridMoviesResult) tasksResult;
             if (loadMoreGridMoviesResult.status== MviStatus.SUCCESS) {
@@ -212,9 +209,7 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
                         true,
                         gridMoviesViewState.load);
             }
-
         }
-
         return  new GridMoviesViewState.GridMoviewViewState(MviStatus.IDLE,new ArrayList<>(),false,false,true);
 
     };
@@ -227,7 +222,6 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
 
         public SortPage(Integer page) {
             this.page = page;
-            //this.sort = sort;
         }
 
         public SortPage updatePage() {
@@ -235,7 +229,7 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
             return this;
         }
 
-        public SortPage update(SortOption sort) {
+        public SortPage updateSortOptions(SortOption sort) {
             if (sort.equals(this.sort)){
                 this.page++;
             }else{
@@ -245,7 +239,7 @@ public class GridMoviesViewModel extends ViewModel implements MviViewModel<GridM
             return this;
         }
 
-        public SortPage update(Integer page, SortOption sort) {
+        public SortPage updateAll(Integer page, SortOption sort) {
             if (sort.equals(this.sort)){
                 this.page++;
             }else{
